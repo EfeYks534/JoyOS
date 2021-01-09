@@ -1,0 +1,4 @@
+bin/*
+!bin/Makefile
+Toolchain/*
+!Toolchain/MakeToolchain.sh

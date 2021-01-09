@@ -53,7 +53,6 @@ void KBHandler0(struct Registers *regs);
 
 void Test(struct Window *win)
 {
-	win->pos_x++;
 }
 
 void KernelMain(struct stivale_struct *boot_data)

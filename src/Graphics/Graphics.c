@@ -58,7 +58,7 @@ void WindowDelete(struct Window *win)
 void GrPlot(int32_t x, int32_t y, uint32_t color)
 {
 	if(x >= lim_width || y >= lim_height || x < 0 || y < 0) return;
-	fb_addr[(start_x + x) + (start_y + y) * lim_width] = color;
+	fb_addr[(start_x + x) + (start_y + y) * fb_width] = color;
 }
 
 void GrInit(struct stivale_struct *data)
