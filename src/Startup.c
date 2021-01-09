@@ -21,11 +21,6 @@ extern void KernelMain();
 
 void _start(struct stivale_struct *bootloader_data)
 {
-	uint16_t *vga = (uint16_t*)0xB8000;
-
-	for(int i = 0; i < 2000; i++)
-		vga[i] = (uint16_t)0x0F00 | ' ';
-
 	KernelMain(bootloader_data);
 	asm volatile("HLT");
 }

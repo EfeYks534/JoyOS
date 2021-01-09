@@ -1,4 +1,5 @@
 bin/*
 !bin/Makefile
+!bin/limine.cfg
 Toolchain/*
 !Toolchain/MakeToolchain.sh

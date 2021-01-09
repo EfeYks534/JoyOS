@@ -17,7 +17,7 @@ void CompileFile2(char *dir, char *f)
 
 void Clean()
 {
-	Execute("rm *.o", 0);
+	Execute("rm ../bin/objects/*.o", 0);
 }
 
 char *cflags2 = "-TLinker.ld -static -no-pie -fno-pic -nostdlib -z max-page-size=0x1000";

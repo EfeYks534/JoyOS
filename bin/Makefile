@@ -17,9 +17,11 @@ iso:
 
 install-limine:
 	git clone https://github.com/limine-bootloader/limine.git --branch=v0.7.2
+	make limine-install -C ./limine
 
 install-echfs:
 	git clone https://github.com/echfs/echfs.git
+	make echfs-utils -C ./echfs
 
 boot:
 	objdump JOYOS.BIN -dS -Mintel > dump.txt
