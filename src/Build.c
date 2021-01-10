@@ -32,7 +32,6 @@ int main(int argc, char **argv)
 	ForEach("./Core/", "c", CompileFile);
 	ForEach("./LibC/", "c", CompileFile);
 	ForEach("./Drivers/", "c", CompileFile);
-	ForEach("./Scheduler/", "c", CompileFile);
 	ForEach("./Graphics/", "c", CompileFile);
 
 	Compile("%s %s ../bin/objects/*.o -o ./JOYOS.BIN", amd64_gcc, cflags2);

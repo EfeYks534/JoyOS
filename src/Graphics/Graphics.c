@@ -1,6 +1,5 @@
 #include "Graphics.h"
 #include "WinMan.h"
-#include <Core/IOLib.h>
 #include <stivale.h>
 #include <string.h>
 #include "Font8x8.h"
@@ -17,17 +16,6 @@ static uint64_t  fb_bpp;
 static uint64_t  fb_pitch;
 static uint32_t *fb_addr;
 
-static struct Window windows[16] = { 0 };
-
-static uint8_t windows_top = 0;
-
-static struct Window *context = &windows[0];
-
-struct Window *WindowNew()
-{
-	return &windows[windows_top++];
-}
-
 void WindowRender(struct Window *win)
 {
 	start_x = win->pos_x;
@@ -36,7 +24,7 @@ void WindowRender(struct Window *win)
 	lim_width  = win->width;
 	lim_height = win->height;
 
-	win->on_draw(win);
+	win->on_draw(win, win->arg);
 
 	start_x = start_y = 0;
 
@@ -48,11 +36,6 @@ void WindowRender(struct Window *win)
 	GrRect(win->pos_x-1, win->pos_y-1, win->width+1, win->height+1, 0x004A1212);
 
 	GrDrawText(win->title, win->pos_x + 2, win->pos_y - 11, 0x00FFFFFF);
-}
-
-void WindowDelete(struct Window *win)
-{
-	win->pos_x = win->pos_x;
 }
 
 void GrPlot(int32_t x, int32_t y, uint32_t color)
@@ -86,12 +69,12 @@ void GrInit(struct stivale_struct *data)
 
 uint32_t GrWidth()
 {
-	return fb_width;
+	return lim_width;
 }
 
 uint32_t GrHeight()
 {
-	return fb_height;
+	return lim_height;
 }
 
 void GrSprite(uint32_t *sprite, uint32_t xx, uint32_t yy, uint32_t w, uint32_t h)

@@ -3,7 +3,6 @@
 #include <stddef.h>
 #include <string.h>
 #include <Core/IOLib.h>
-#include <Scheduler/Scheduler.h>
 #include <Common/KernelLib.h>
 
 typedef struct Pipe
@@ -40,7 +39,7 @@ int pstat(int64_t pid)
 
 void poll(int64_t pid)
 {
-	SchWaitUntil(SCHACT_PIPE, pid);
+	while(!pstat(pid)) asm volatile("nop");
 }
 
 static void putpipe(uint8_t data, int64_t pid)

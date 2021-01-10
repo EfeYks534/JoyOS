@@ -6,7 +6,6 @@
 #include <pipe.h>
 #include "Common/Macros.h"
 #include "Core/IOLib.h"
-#include "Scheduler/Scheduler.h"
 #include "Core/IDTLib.h"
 #include "stivale.h"
 #include "Core/PIC.h"
@@ -18,28 +17,22 @@
 #include "Common/KernelLib.h"
 #include "Common/Registers.h"
 
-#if defined(__linux__)
-#error "use cross compiler shithead"
-#endif
-
-void STI() { asm volatile("sti"); }
-void CLI() { asm volatile("cli"); }
-
-void KernelPanic(char *str, ...)
+void KernelPanic(char *fmt, ...)
 {
-	printf("\x1B\x0Fjoy:\x1B\x04 panic:\x1B\x0F ");
+	char str[4096] = { 0 };
 
 	va_list ap;
-	va_start(ap, str);
+	va_start(ap, fmt);
 
-	vprintf(str, ap);
+	vsnprintf(str, 4096, fmt, ap);
 
 	va_end(ap);
 
-	CLI();
+	GrFillRect(0, 0, GrWidth(), GrHeight(), 0x000404B4);
+	GrDrawText(str, 24, 156, 0x00FFFFFF);
+
 	Hang();
 }
-
 
 void Hang()
 {
@@ -49,15 +42,9 @@ void Hang()
 	);
 }
 
-void KBHandler0(struct Registers *regs);
-
-void Test(struct Window *win)
-{
-}
-
 void KernelMain(struct stivale_struct *boot_data)
 {
-	CLI();
+	asm volatile("cli");
 
 	LoadGDT();
 
@@ -65,26 +52,13 @@ void KernelMain(struct stivale_struct *boot_data)
 	PICSetupInterrupts();
 	IDTInstall();
 
-	SchInit();
-
 	IRQSetHandler(8, KBHandler0);
 	KBInit();
 
 	GrInit(boot_data);
 
-	STI();
+	asm volatile("sti");
 
-	struct Window *win = WindowNew();
-	win->pos_x = 150;
-	win->pos_y = 150;
-	win->width = 640;
-	win->height = 480;
-	win->on_draw = Test;
-	win->title = "Terminal Emulator";
-
-	while(1) {
-		SchSleep(416);
-		WindowRender(win);
+	while(1)
 		asm volatile("hlt");
-	}
 }

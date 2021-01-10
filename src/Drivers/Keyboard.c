@@ -152,7 +152,8 @@ void KBHandler0(struct Registers *regs)
 
 		tr_key = TranslateKey(tr_key);
 
-		if(tr_key != 0) write(&tr_key, 1, kbpipe);
+		if(tr_key != 0)
+			write(&tr_key, 1, kbpipe);
 	}
 }
 

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stddef.h>
+#include <stdint.h>
+
 struct Window
 {
 	char     *title;
@@ -8,10 +11,8 @@ struct Window
 	uint32_t  pos_x;
 	uint32_t  pos_y;
 
-	void (*on_draw)(struct Window*);
-
-	struct Window *last;
-	struct Window *next;
+	void (*on_draw)(struct Window*, void*);
+	void *arg;
 };
 
 struct Window *WindowNew();
