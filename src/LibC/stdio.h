@@ -133,6 +133,8 @@ int vprintf(const char *fmt, va_list ap);
 
 int sprintf(char *str, const char *fmt, ...);
 
+int snprintf(char *str, int len, const char *fmt, ...);
+
 int vsprintf(char *str, const char *fmt, va_list ap);
 
 int vsnprintf(char *str, int len, const char *fmt, va_list ap);

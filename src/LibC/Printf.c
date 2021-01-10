@@ -52,6 +52,18 @@ int sprintf(char *str, const char *fmt, ...)
 	return len;
 }
 
+int snprintf(char *str, int len, const char *fmt, ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+
+	int _len = vsnprintf(str, len, fmt, ap);
+
+	va_end(ap);
+
+	return _len;
+}
+
 int vsprintf(char *str, const char *fmt, va_list ap)
 {
 	return vsnprintf(str, 65536, fmt, ap);

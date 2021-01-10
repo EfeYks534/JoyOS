@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include "stivale.h"
 
-static uint8_t stack[25165824] = {0};
+static uint8_t stack[3145728] = {0};
 
 
 void _start(struct stivale_struct *bootloader_data);
