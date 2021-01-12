@@ -10,7 +10,7 @@ void putchar(char ch)
 
 int printf(const char *fmt, ...)
 {	
-	char buf[4096] = { 0 };
+	char buf[4098] = { 0 };
 
 	va_list ap;
 	va_start(ap, fmt);
@@ -19,9 +19,7 @@ int printf(const char *fmt, ...)
 
 	va_end(ap);
 
-	int i = 0;
-	while(buf[i] != 0)
-		putchar(buf[i++]);
+	write(buf, len, stdout);
 
 	return len;
 }
@@ -34,8 +32,8 @@ int vprintf(const char *fmt, va_list ap)
 	int len = vsnprintf(buf, 4096, fmt, ap);
 
 	int i = 0;
-	while(buf[i] != 0)
-		putchar(buf[i++]);
+
+	write(buf, len, stdout);
 
 	return len;
 }
