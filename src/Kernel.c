@@ -16,6 +16,7 @@
 #include "Drivers/KBController.h"
 #include "Common/KernelLib.h"
 #include "Memory/MemMng.h"
+#include "Sched/Task.h"
 #include "Common/Registers.h"
 
 void KernelPanic(char *fmt, ...)
@@ -47,7 +48,7 @@ uint64_t *GetMMap();
 
 static uint64_t term_y = 10;
 
-void KernelMain(struct stivale_struct *boot_data)
+void KernelMain(struct stivale_struct *boot_data, uint8_t *stack)
 {
 	asm volatile("cli");
 
@@ -66,24 +67,21 @@ void KernelMain(struct stivale_struct *boot_data)
 
 	asm volatile("sti");
 
-	void *p1 = MemAlloc();
-	void *p2 = MemAlloc();
-	void *p3 = MemAlloc();
-	void *p4 = MemAlloc();
-	void *p5 = MemAlloc();
+	MemCAlloc(4);
+	void *ptr = MemCAlloc(4);
+	MemCAlloc(4);
+	MemFree(ptr);
 
-	MemFree(p3);
-	MemFree(p1);
+	MemCAlloc(5);
 
 	uint64_t *mmap = GetMMap();
 
-	for(int i = 0; i < 24; i++) {
+	for(int i = 0; i < 96 / 3; i++) {
 		char str[4096] = { 0 };
 
-		snprintf(str, 4096, "%bl ", mmap[i*4],mmap[(i+1)*4],mmap[(i+2)*4],mmap[(i+3)*4]);
+		snprintf(str, 4096, "%xl %xl %xl", mmap[i*3], mmap[i*3+1], mmap[i*3+2]);
 
 		GrDrawText(str, 10, term_y, 0);
-
 		term_y += 10;
 	}
 
