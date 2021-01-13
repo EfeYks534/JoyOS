@@ -46,33 +46,16 @@ void Hang()
 
 uint64_t *GetMMap();
 
-static uint64_t term_y = 10;
 
-void KernelMain(struct stivale_struct *boot_data, uint8_t *stack)
+void TestMem()
 {
-	asm volatile("cli");
-
-	LoadGDT();
-
-	SetupInterrupts();
-	PICSetupInterrupts();
-	IDTInstall();
-
-	IRQSetHandler(8, KBHandler0);
-	KBInit();
-
-	GrInit(boot_data);
-
-	MemInit();
-
-	asm volatile("sti");
-
+	uint64_t term_y = 10;
 	MemCAlloc(4);
 	void *ptr = MemCAlloc(4);
 	MemCAlloc(4);
 	MemFree(ptr);
 
-	MemCAlloc(5);
+	ptr = MemCAlloc(5);
 
 	uint64_t *mmap = GetMMap();
 
@@ -84,6 +67,34 @@ void KernelMain(struct stivale_struct *boot_data, uint8_t *stack)
 		GrDrawText(str, 10, term_y, 0);
 		term_y += 10;
 	}
+}
 
-	while(1) asm volatile("hlt");
+void Thread2Entry()
+{
+	
+}
+
+
+void KernelMain(struct stivale_struct *boot_data, uint8_t *stack)
+{
+	asm volatile("cli");
+
+	LoadGDT();
+
+	SetupInterrupts();
+	PICSetupInterrupts();
+
+	IRQSetHandler(8, KBHandler0);
+	KBInit();
+
+	IDTInstall();
+
+	GrInit(boot_data);
+
+	MemInit();
+	TaskInit(stack);
+
+	asm volatile("sti");
+
+	TestMem();
 }
