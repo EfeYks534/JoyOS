@@ -1,14 +1,16 @@
 #include "Graphics.h"
+#include <Memory/MemMng.h>
 #include "WinMan.h"
+#include <Sched/Task.h>
 #include <stivale.h>
 #include <string.h>
 #include "Font8x8.h"
 
-static uint64_t lim_width;
-static uint64_t lim_height;
+static int64_t lim_width;
+static int64_t lim_height;
 
-static uint64_t start_x;
-static uint64_t start_y;
+static int64_t start_x;
+static int64_t start_y;
 
 static uint64_t  fb_width;
 static uint64_t  fb_height;
@@ -16,21 +18,46 @@ static uint64_t  fb_bpp;
 static uint64_t  fb_pitch;
 static uint32_t *fb_addr;
 
-void WindowRender(struct Window *win)
+static uint32_t *framebuffer;
+
+void GrRestoreLimits()
 {
+	start_x = 0;
+	start_y = 0;
+	lim_width = fb_width;
+	lim_height = fb_height;
+}
+
+void GrRender(struct Window *win)
+{
+	win->should_render = 0;
+
 	start_x = win->pos_x;
 	start_y = win->pos_y;
 
 	lim_width  = win->width;
 	lim_height = win->height;
 
-	win->on_draw(win, win->arg);
+	void (*func)(struct Window *win, void *arg) = win->on_draw;
+	if(func != NULL)
+		func(win, win->arg);
 
-	start_x = start_y = 0;
+	start_x = 0;
+	start_y = 0;
 
 	lim_width  = fb_width;
 	lim_height = fb_height;
+}
 
+void GrFlush()
+{
+	int size = fb_width * fb_height;
+	for(int i = 0; i < size; i++)
+		fb_addr[i] = framebuffer[i];
+}
+
+void WindowRender(struct Window *win)
+{
 	GrFillRect(win->pos_x-1, win->pos_y-14, win->width+1, 14, 0x00347499);
 	GrRect(win->pos_x-1, win->pos_y-14, win->width+1, 14, 0x004A1212);
 	GrRect(win->pos_x-1, win->pos_y-1, win->width+1, win->height+1, 0x004A1212);
@@ -40,8 +67,12 @@ void WindowRender(struct Window *win)
 
 void GrPlot(int32_t x, int32_t y, uint32_t color)
 {
-	if(x >= lim_width || y >= lim_height || x < 0 || y < 0) return;
-	fb_addr[(start_x + x) + (start_y + y) * fb_width] = color;
+	int32_t px = start_x + x;
+	int32_t py = start_y + y;
+	if((x >= lim_width) || (y >= lim_height) || (x < 0) || (y < 0)) return;
+	if((px >= fb_width) || (py >= fb_height) || (px < 0) || (py < 0)) return;
+
+	framebuffer[px + py * fb_width] = color;
 }
 
 void GrInit(struct stivale_struct *data)
@@ -51,15 +82,11 @@ void GrInit(struct stivale_struct *data)
 	fb_bpp = data->framebuffer_bpp;
 	fb_pitch = data->framebuffer_pitch;
 	fb_addr = (uint32_t*) data->framebuffer_addr;
+	framebuffer = MemCAlloc(fb_width * fb_height * 4 / 4096);
 
-	if(fb_bpp != 32) {
-		while(1)
-			asm volatile("cli\nhlt");
+	if(fb_bpp != 32 || framebuffer == NULL) {
+		asm volatile("cli\nhlt");
 	}
-
-	uint32_t color = 0x00AABBCC;
-
-	memrep(fb_addr, &color, 4, fb_width * fb_height * 4);
 
 	lim_width  = fb_width;
 	lim_height = fb_height;

@@ -1,9 +1,15 @@
 #pragma once
 
 #include <stivale.h>
-
 #include <stddef.h>
 #include <stdint.h>
+#include "WinMan.h"
+
+void GrFlush();
+
+void GrRestoreLimits();
+
+void GrRender(struct Window *win);
 
 void GrInit(struct stivale_struct *data);
 
