@@ -42,11 +42,10 @@ void *memmove(void *dest, const void *src, size_t n)
 {
 	uint8_t arr[n];
 
-	for(size_t i = 0; i < n; i++)
+	for(size_t i = 0; i < n; i++) {
 		arr[i] = uint8p(src)[i];
-
-	for(size_t i = 0; i < n; i++)
 		uint8p(dest)[i] = arr[i];
+	}
 }
 
 size_t strlen(const char *str)
@@ -54,4 +53,27 @@ size_t strlen(const char *str)
 	size_t len = 0;
 	while(str[len] != 0) len++;
 	return len;
+}
+
+char *strcpy(char *dest, const char *src)
+{
+	size_t i = 0;
+	while(src[i] != 0)
+		dest[i] = src[i++];
+
+	dest[i] = 0;
+
+	return dest;
+}
+
+char *strncpy(char *dest, const char *src, size_t n)
+{
+	size_t i = 0;
+	while(src[i] != 0 && i < n)
+		dest[i] = src[i++];
+
+	if(i < n)
+		dest[i] = 0;
+
+	return dest;
 }

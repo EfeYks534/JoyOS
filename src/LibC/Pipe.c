@@ -2,8 +2,11 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <string.h>
+#include <Sched/Task.h>
 #include <Core/IOLib.h>
 #include <Common/KernelLib.h>
+
+#define uint8p(x) ((uint8_t*)x)
 
 typedef struct Pipe
 {
@@ -39,7 +42,10 @@ int pstat(int64_t pid)
 
 void poll(int64_t pid)
 {
-	while(!pstat(pid)) asm volatile("nop");
+	TaskGet()->state = TASK_PIPING;
+	TaskGet()->info  = pid;
+	while(!pstat(pid))
+		TaskYield();
 }
 
 static void putpipe(uint8_t data, int64_t pid)
@@ -68,13 +74,10 @@ static uint8_t readpipe(int64_t pid)
 	return pipe->buf[pipe->read - 1];
 }
 
-
-#define INTCAST(x) ((uint8_t*)x)
-
 void write(const void *buf, size_t len, int64_t pid)
 {
 	for(size_t i = 0; i < len; i++)
-		putpipe(INTCAST(buf)[i], pid);
+		putpipe(uint8p(buf)[i], pid);
 
 	pipes[pid].changed = 1;
 }
@@ -82,5 +85,5 @@ void write(const void *buf, size_t len, int64_t pid)
 void read(void *buf, size_t len, int64_t pid)
 {
  	for(size_t i = 0; i < len; i++)
-		INTCAST(buf)[i] = readpipe(pid);
+		uint8p(buf)[i] = readpipe(pid);
 }

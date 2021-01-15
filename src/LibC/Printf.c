@@ -27,7 +27,7 @@ int printf(const char *fmt, ...)
 
 int vprintf(const char *fmt, va_list ap)
 {
-	char buf[4096] = { 0 };
+	char buf[4098] = { 0 };
 
 	int len = vsnprintf(buf, 4096, fmt, ap);
 
