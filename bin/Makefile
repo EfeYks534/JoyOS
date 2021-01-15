@@ -27,5 +27,9 @@ boot:
 	objdump JOYOS.BIN -dS -Mintel > dump.txt
 	qemu-system-x86_64 -enable-kvm -d int -no-reboot -m 2G -hda JOYOS.IMG
 
+no-kvm:
+	objdump JOYOS.BIN -dS -Mintel > dump.txt
+	qemu-system-x86_64 -d int -no-reboot -m 2G -hda JOYOS.IMG
+
 clean:
 	rm JOYOS.IMG

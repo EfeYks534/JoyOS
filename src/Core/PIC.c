@@ -15,9 +15,9 @@ void IRQHandler(struct Registers *regs)
 {
 	uint8_t irq = regs->exception_num;
 
-	if(irq == 7 || irq == 15) {
-		// TODO: Handle spurious IRQ
-	}
+	if(irq == 7)
+		if((PICGetISR() & 128) == 0)
+			return;
 
 	for(int i = irq * 8; i < irq + 8; i++)
 		if(handlers[i] != NULL)

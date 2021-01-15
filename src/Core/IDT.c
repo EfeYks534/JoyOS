@@ -88,7 +88,7 @@ void ExceptionHandler(struct Registers *regs)
 	if(exception_num > 20)
 		exception_num = 21;
 
-	KernelPanic("%s exception on %xl", exception_str[exception_num], regs->rip);
+	KernelPanic("Exception: %s on %xl", exception_str[exception_num], regs->rip);
 }
 
 #define EXCEPTION(x) void ExceptionInterrupt##x();
