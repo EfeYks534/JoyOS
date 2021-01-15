@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include "../LibC/stdio.h"
+#include <stdio.h>
 #include <string.h>
 #include <pipe.h>
 #include <stddef.h>
@@ -29,6 +29,7 @@ static const uint8_t single_bytes_key[] =
 	VK_TAB,
 	VK_Q,
 	VK_W,
+	VK_E,
 	VK_R,
 	VK_T,
 	VK_Y,
@@ -94,7 +95,8 @@ static const uint8_t single_bytes_key[] =
 	VK_NP3,
 	VK_NP0,
 	VK_NP_DOT,
-	-1, -1, -1,
+	-1, -1,
+	VK_NP7,
 	VK_F11,
 	VK_F12
 };
@@ -112,10 +114,12 @@ int64_t KBPipe()
 
 static uint8_t capslock = 0;
 
-char TranslateKey(uint8_t key)
+uint8_t TranslateKey(uint8_t key)
 {
 	uint8_t shift = kb_keys[VK_LSHIFT] || kb_keys[VK_RSHIFT];
-	shift = capslock ? !shift : shift;
+	uint8_t ctrl = kb_keys[VK_LCTRL];
+	if(capslock)
+		shift = !shift;
 
 	switch(key)
 	{
@@ -131,6 +135,44 @@ char TranslateKey(uint8_t key)
 	case VK_0: return (!shift) ? '0' : '=';
 	case VK_ASTERISK: return (!shift) ? '*' : '?';
 	case VK_DASH: return (!shift) ? '-' : '_';
+	case VK_A: return (!shift) ? 'a' : 'A';
+	case VK_S: return (!shift) ? 's' : 'S';
+	case VK_D: return (!shift) ? 'd' : 'D';
+	case VK_F: return (!shift) ? 'f' : 'F';
+	case VK_G: return (!shift) ? 'g' : 'G';
+	case VK_H: return (!shift) ? 'h' : 'H';
+	case VK_J: return (!shift) ? 'j' : 'J';
+	case VK_K: return (!shift) ? 'k' : 'K';
+	case VK_L: return (ctrl)   ?'\f' : (!shift) ? 'l' : 'L';
+	case VK_Q: return (!shift) ? 'q' : 'Q';
+	case VK_W: return (!shift) ? 'w' : 'W';
+	case VK_E: return (!shift) ? 'e' : 'E';
+	case VK_R: return (!shift) ? 'r' : 'R';
+	case VK_T: return (!shift) ? 't' : 'T';
+	case VK_Y: return (!shift) ? 'y' : 'Y';
+	case VK_U: return (!shift) ? 'u' : 'U';
+	case VK_I: return (!shift) ? 'i' : 'I';
+	case VK_O: return (!shift) ? 'o' : 'O';
+	case VK_P: return (!shift) ? 'p' : 'P';
+	case VK_Z: return (!shift) ? 'z' : 'Z';
+	case VK_X: return (!shift) ? 'x' : 'X';
+	case VK_C: return (!shift) ? 'c' : 'C';
+	case VK_V: return (!shift) ? 'v' : 'V';
+	case VK_B: return (!shift) ? 'b' : 'B';
+	case VK_N: return (!shift) ? 'n' : 'N';
+	case VK_M: return (!shift) ? 'm' : 'M';
+	case VK_NP7: return (!shift) ? '<' : '>';
+	case VK_SOFT_G: return (!shift) ? '\xF0' : '\xD0';
+	case VK_SOFT_U: return (!shift) ? '\xFC' : '\xDC';
+	case VK_SOFT_S: return (!shift) ? '\xFE' : '\xDE';
+	case VK_SOFT_O: return (!shift) ? '\xF6' : '\xD6';
+	case VK_SOFT_C: return (!shift) ? '\xE7' : '\xC7';
+	case VK_COMMA: return (!shift) ? ',' : ';';
+	case VK_DOT: return (!shift) ? '.' : ':';
+	case VK_SPACE: return ' ';
+	case VK_ENTER: return '\n';
+	case VK_TAB: return '\t';
+	case VK_BACKSPACE: return '\b';
 	default: return 0;
 	}
 }
@@ -148,11 +190,14 @@ void KBHandler0(struct Registers *regs)
 		if((tr_key == VK_CAPSLOCK) && released && !kb_keys[tr_key])
 			capslock = !capslock;
 
-		kb_keys[tr_key] = released;
+		kb_keys[tr_key] = !released;
 
 		tr_key = TranslateKey(tr_key);
 
-		if(tr_key != 0)
+		if(tr_key != 0 && !released)
+			write(&tr_key, 1, stdin);
+
+		if(!released)
 			write(&tr_key, 1, kbpipe);
 	}
 }
