@@ -17,6 +17,10 @@ struct Task
 	struct Task  *last;
 };
 
+struct Task *TaskGet();
+
+void Schedule(struct Registers *regs);
+
 void TaskInit(uint8_t *main_stack);
 
 void TaskNew(struct Task *task, void(*entry)());
