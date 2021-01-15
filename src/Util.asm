@@ -18,7 +18,7 @@ TaskSwitch:
 	IRETQ
 
 TaskYield:
-	MOV RSI, [RSP]
+	MOV RSI, QWORD [RSP]
 	ADD RSP, 0x08
 	MOV RAX, RSP
 
@@ -40,5 +40,3 @@ TaskYield:
 	MOV RDI, RSP
 	CLD
 	CALL Schedule
-
-	UD2

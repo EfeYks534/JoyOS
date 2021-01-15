@@ -3,7 +3,7 @@
 #include "Sched/Task.h"
 #include "stivale.h"
 
-static uint8_t stack[3145728] = {0};
+static uint8_t stack[25165824] = {0};
 
 void _start(struct stivale_struct *bootloader_data);
 
@@ -22,5 +22,5 @@ extern void KernelMain(struct stivale_struct *boot_data, uint8_t *kern_stack);
 void _start(struct stivale_struct *bootloader_data)
 {
 	KernelMain(bootloader_data, stack);
-	asm volatile("hlt");
+	while(1) asm volatile("hlt");
 }
