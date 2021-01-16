@@ -4,6 +4,7 @@
 #include <Sched/Task.h>
 #include <stivale.h>
 #include <string.h>
+#include <Core/IOLib.h>
 #include "Font8x8.h"
 
 static int64_t lim_width;
@@ -42,11 +43,7 @@ void GrRender(struct Window *win)
 	if(func != NULL)
 		func(win, win->arg);
 
-	start_x = 0;
-	start_y = 0;
-
-	lim_width  = fb_width;
-	lim_height = fb_height;
+	GrRestoreLimits();
 }
 
 void GrFlush()
@@ -85,13 +82,11 @@ void GrInit(struct stivale_struct *data)
 	framebuffer = MemCAlloc(fb_width * fb_height * 4 / 4096);
 
 	if(fb_bpp != 32 || framebuffer == NULL) {
+		Out16(0x604, 0x2000);
 		asm volatile("cli\nhlt");
 	}
 
-	lim_width  = fb_width;
-	lim_height = fb_height;
-	start_x = 0;
-	start_y = 0;
+	GrRestoreLimits();
 }
 
 uint32_t GrWidth()
