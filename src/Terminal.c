@@ -118,7 +118,6 @@ static void TermDraw(struct Window *win, void *arg)
 
 void TerminalEmulator()
 {
-	*((int*) 0) = 1;
 	term_win = WindowNew();
 	term_win->pos_x  = 192;
 	term_win->pos_y  = 174;
@@ -130,8 +129,6 @@ void TerminalEmulator()
 
 	for(int i = 0; i < 4800; i++)
 		term_buf[i] = 0x0F00;
-
-	TaskSleep(1000);
 
 	while(1) {
 		if(term_win->should_render)

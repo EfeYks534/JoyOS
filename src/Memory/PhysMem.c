@@ -74,7 +74,7 @@ void PhysInit(struct stivale_struct *boot_data)
 
 	pmm.total_pages = pmm.total_mem / 4096;
 
-	printf("A total of %d memory was found.", pmm.total_mem);
+	printf("A total %d bytes of memory has been found.", pmm.total_mem);
 
 	for(uint64_t i = 0; i < boot_data->memory_map_entries; i++) {
 		struct MMapEntry *ent = &mmap[i];

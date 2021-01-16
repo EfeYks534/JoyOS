@@ -62,17 +62,21 @@ void KernelMain(struct stivale_struct *boot_data, uint8_t *stack)
 
 	IDTInstall();
 
-	MemInit(boot_data);
 
-	asm volatile("sti");
+	TaskInit(stack);
 
 	IRQSetHandler(8, KBHandler0);
 	KBInit();
-	TaskInit(stack);
+
+	MemInit(boot_data);
+	PhysInit(boot_data);
+
 	GrInit(boot_data);
-	TimerStart();
 
 	WinManStart();
+	TimerStart();
+
+	asm volatile("sti");
 
 	if((boot_data->flags & 1) == 0)
 		KernelPanic("Joy OS currently doesn't support UEFI");
